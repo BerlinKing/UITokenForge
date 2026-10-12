@@ -22,7 +22,7 @@ test("approved lifecycle batches produce safe source changes and Draft PR prepar
   await writeFile(path.join(repo, "tokens.css"), css, "utf8");
   await execFileAsync("git", ["init", "-b", "main"], { cwd: repo });
   await execFileAsync("git", ["config", "user.email", "govern-ui@example.invalid"], { cwd: repo });
-  await execFileAsync("git", ["config", "user.name", "GovernUI Test"], { cwd: repo });
+  await execFileAsync("git", ["config", "user.name", "UITokenForge Test"], { cwd: repo });
   await execFileAsync("git", ["add", "tokens.css"], { cwd: repo });
   await execFileAsync("git", ["commit", "-m", "fixture"], { cwd: repo });
 

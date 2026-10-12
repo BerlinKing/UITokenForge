@@ -19,7 +19,7 @@ export async function theme() {
   return { css: css + '\n' + bridge, hash };
 }
 export function navigation(active) {
-  return `<header class="header artifact-header"><a class="brand" href="scan.html">GovernUI</a></header><nav class="artifact-steps" aria-label="产物导航">${ARTIFACTS.map(([id,file,label]) => `<a href="${file}" ${id===active?'aria-current="page"':''}><span class="letter">${id}</span><strong>${label}</strong></a>`).join('')}</nav>`;
+  return `<header class="header artifact-header"><a class="brand" href="scan.html">UITokenForge</a></header><nav class="artifact-steps" aria-label="产物导航">${ARTIFACTS.map(([id,file,label]) => `<a href="${file}" ${id===active?'aria-current="page"':''}><span class="letter">${id}</span><strong>${label}</strong></a>`).join('')}</nav>`;
 }
 // Compatibility renderers keep their tested editors/evidence, but may not own a second visual shell.
 export async function applyArtifactTheme(html, active) {

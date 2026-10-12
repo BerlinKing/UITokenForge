@@ -380,7 +380,7 @@ try {
   await rm(temp, { recursive: true, force: true });
 }
 
-process.stdout.write(`Passed GovernUI atomic-library and design-review tests\n`);
+process.stdout.write(`Passed UITokenForge atomic-library and design-review tests\n`);
 process.stdout.write(`Bootstrap findings: ${bootstrap.findings.length}\n`);
 process.stdout.write(`Migrate findings: ${migrate.findings.length}\n`);
 process.stdout.write(`Hybrid findings: ${hybrid.findings.length}\n`);

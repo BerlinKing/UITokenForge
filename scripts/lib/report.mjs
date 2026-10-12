@@ -30,7 +30,7 @@ function safeScriptJson(value) {
 export function markdownReport(report) {
   const severity = countBy(report.findings, (item) => item.severity);
   const lines = [
-    `# GovernUI: ${report.repoProfile.rootName}`,
+    `# UITokenForge: ${report.repoProfile.rootName}`,
     "",
     `- Recommended lane: **${report.recommendedLane}** (${Math.round(report.maturity.confidence * 100)}% heuristic evidence score)`,
     `- Scanned files: ${report.scan.scannedFiles}`,
@@ -90,7 +90,7 @@ export function markdownReport(report) {
 export function terminalSummary(report) {
   const severity = countBy(report.findings, (item) => item.severity);
   return [
-    `GovernUI — ${report.repoProfile.rootName}`,
+    `UITokenForge — ${report.repoProfile.rootName}`,
     `Lane: ${report.recommendedLane} (${Math.round(report.maturity.confidence * 100)}% heuristic evidence score)`,
     `Scanned: ${report.scan.scannedFiles} files; ${report.scan.skippedFiles} source entries skipped`,
     `Tokens: ${report.tokenDefinitions.length} definitions / ${report.tokenOwners.length} owner candidates`,
@@ -162,7 +162,7 @@ export async function writeReportArtifacts(report, outputDirectory, options = {}
   const reviewBrief = normalizeReviewBrief(options.reviewBrief, report);
   const presentationReport = htmlPresentationReport(report, reviewBrief, options);
   const html = template
-    .replaceAll("{{REPORT_TITLE}}", escapeHtml(`GovernUI — ${report.repoProfile.rootName}`))
+    .replaceAll("{{REPORT_TITLE}}", escapeHtml(`UITokenForge — ${report.repoProfile.rootName}`))
     .replace("{{REPORT_JSON}}", safeScriptJson(presentationReport));
   const files = {
     json: path.join(output, "audit.json"),

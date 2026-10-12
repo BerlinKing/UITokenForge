@@ -1,4 +1,4 @@
 interface:
-  display_name: "GovernUI"
+  display_name: "UITokenForge"
   short_description: "Map UI elements, define Tokens, and govern approved batches"
-  default_prompt: "Use $govern-ui to map modules, subfunctions and UI elements; inventory atomic styles and concrete issues with product locations and opening steps; confirm a shared semantic framework and source bindings; then govern only explicitly approved small batches and verify real page states. Do not modify application code or create a PR without separate authorization."
+  default_prompt: "Use $ui-token-forge to map modules, subfunctions and UI elements; inventory atomic styles and concrete issues with product locations and opening steps; confirm a shared semantic framework and source bindings; then govern only explicitly approved small batches and verify real page states. Do not modify application code or create a PR without separate authorization."

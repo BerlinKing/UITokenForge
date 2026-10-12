@@ -1,8 +1,8 @@
-# GovernUI
+# UITokenForge
 
 **Understand the styles in your frontend. Define shared tokens. Review changes with evidence.**
 
-GovernUI is a Codex Skill for designers who work with code, individual developers, and product teams maintaining existing interfaces. It inventories styles from source, provides an editable semantic Token specification, and helps Codex plan and verify scoped UI improvements.
+UITokenForge is a Codex Skill for designers who work with code, individual developers, and product teams maintaining existing interfaces. It inventories styles from source, provides an editable semantic Token specification, and helps Codex plan and verify scoped UI improvements.
 
 Start with a single page or module. Expand into a shared governance workflow when you need it.
 
@@ -25,7 +25,7 @@ Equal values do not necessarily have equal meanings. A missing static reference 
 | Review | Existing styles and proposed Tokens | Shared owners, contextual mappings, and batch decisions |
 | Keep | Scan report, Token specification, design manual | Versioned decisions, execution receipts, and verification records |
 
-The same core workflow supports both. Team records are maintained through Codex and exported files; GovernUI does not provide a hosted collaboration service.
+The same core workflow supports both. Team records are maintained through Codex and exported files; UITokenForge does not provide a hosted collaboration service.
 
 ## Install
 
@@ -34,10 +34,10 @@ Core scanning requires Git, Codex, and Node.js 20 or newer.
 For a new installation:
 
 ```bash
-git clone https://github.com/BerlinKing/govern-ui.git "${CODEX_HOME:-$HOME/.codex}/skills/govern-ui"
+git clone https://github.com/BerlinKing/UITokenForge.git "${CODEX_HOME:-$HOME/.codex}/skills/ui-token-forge"
 ```
 
-If that directory already exists, compare and preserve your local changes before updating it. Invoke the Skill as `$govern-ui` once it is available in your Codex session.
+If that directory already exists, compare and preserve your local changes before updating it. Invoke the Skill as `$ui-token-forge` once it is available in your Codex session.
 
 Element-level TSX reconnaissance additionally requires an installed TypeScript parser. Browser verification requires a browser and suitable automation tooling. Resolving package icon geometry may require the target project's installed dependencies. These are optional for the first scan.
 
@@ -46,14 +46,14 @@ Element-level TSX reconnaissance additionally requires an installed TypeScript p
 For an individual project:
 
 ```text
-Use $govern-ui to inspect this frontend's styles. Start with the settings page,
+Use $ui-token-forge to inspect this frontend's styles. Start with the settings page,
 show the scan report, and identify which source observations need review.
 ```
 
 For a team:
 
 ```text
-Use $govern-ui to map this frontend's modules and inspect shared style owners.
+Use $ui-token-forge to map this frontend's modules and inspect shared style owners.
 Prepare a Token specification and propose a small migration batch with affected
 pages and states. Explain what has been verified and what remains unresolved.
 ```
@@ -61,7 +61,7 @@ pages and states. Explain what has been verified and what remains unresolved.
 For Token definition:
 
 ```text
-Use $govern-ui to prepare an editable semantic Token specification from the
+Use $ui-token-forge to prepare an editable semantic Token specification from the
 inspected source. Keep observed values separate from proposed defaults.
 ```
 
@@ -69,7 +69,7 @@ Specify the scope you want. Generating reports and confirming a specification do
 
 ## Try the scanner directly
 
-Run these commands from the installed GovernUI directory:
+Run these commands from the installed UITokenForge directory:
 
 ```bash
 node scripts/govern.mjs library /path/to/frontend --out /tmp/govern-ui-scan
@@ -112,6 +112,12 @@ node scripts/govern.mjs check /path/to/frontend --baseline /tmp/govern-ui-baseli
 ```
 
 Keep the reviewed baseline with your team's records. The check compares findings and gates newly added high-confidence, high-severity findings; it does not prove design quality or replace runtime verification.
+
+## Upgrading from GovernUI
+
+The Skill is now named `ui-token-forge` and the repository is `BerlinKing/UITokenForge`. Existing installations should preserve local edits and rename the Skill directory to `ui-token-forge` before updating; the Skill metadata and invocation use the new name.
+
+Export filenames, JSON schema identifiers, browser draft storage keys, environment variables, and the `scripts/govern.mjs` command retain their existing identifiers for compatibility. The rename does not migrate or invalidate saved project decisions.
 
 ## Current boundaries
 
