@@ -1,0 +1,17 @@
+{
+  "name": "govern-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node scripts/tests/test-suite.mjs",
+    "test:core": "node scripts/tests/run-tests.mjs",
+    "test:browser": "node scripts/tests/framework-browser.mjs",
+    "check": "node scripts/tests/test-suite.mjs --syntax"
+  },
+  "devDependencies": {
+    "playwright": "1.64.0",
+    "typescript": "5.9.3"
+  }
+}

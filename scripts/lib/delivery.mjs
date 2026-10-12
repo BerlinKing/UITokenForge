@@ -1,8 +1,8 @@
 import { execFile } from "node:child_process";
-import { mkdir, realpath, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { generatedAt, readJson } from "./utils.mjs";
+import { generatedAt, readJson, sha } from "./utils.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -76,6 +76,12 @@ export async function prepareSubmission({ repoRoot, ledgerFile, outputDir, title
     git(root, ["diff", "--cached", "--name-only"]),
   ]);
   if (await realpath(top) !== await realpath(root)) throw new Error(`repository root mismatch: ${top}`);
+  if (ledger.sourceBaseline?.root !== await realpath(root) || await realpath(ledger.repoRoot) !== await realpath(root)) throw new Error("ledger repository mismatch");
+  for (const item of ledger.changedFiles) {
+    if (path.isAbsolute(item.file) || item.file.split(/[\\/]/).includes("..")) throw new Error("invalid ledger file path");
+    const file = await realpath(path.join(root, item.file));
+    if (!file.startsWith(await realpath(root) + path.sep) || sha(await readFile(file, "utf8")) !== item.afterHash) throw new Error(`ledger source drift: ${item.file}; regenerate and review the execution receipt`);
+  }
   if (staged) throw new Error("pre-existing staged changes must be cleared before GovernUI submission");
   const allowed = new Set(ledger.changedFiles.map((item) => item.file));
   const dirty = status.split("\n").filter(Boolean).map(statusPath);

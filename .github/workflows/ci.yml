@@ -18,10 +18,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: npm
+      - name: Install locked development dependencies
+        run: npm ci
       - name: Check syntax
-        run: |
-          for file in scripts/*.mjs scripts/lib/*.mjs scripts/tests/*.mjs; do
-            node --check "$file"
-          done
-      - name: Run fixture suite
-        run: node scripts/tests/run-tests.mjs
+        run: npm run check
+      - name: Run all non-browser suites
+        run: npm test
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install browser for editor tests
+        run: npx playwright install --with-deps chromium
+      - name: Verify Token editor behavior
+        run: npm run test:browser

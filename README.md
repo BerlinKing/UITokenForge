@@ -1,141 +1,157 @@
 # GovernUI
 
-> **See the real design library. Review what it should become.**
+**Understand the styles in your frontend. Define shared tokens. Review changes with evidence.**
 
-GovernUI is an open-source Codex Skill with four distinct artifact responsibilities:
+GovernUI is a Codex Skill for designers who work with code, individual developers, and product teams maintaining existing interfaces. It inventories styles from source, provides an editable semantic Token specification, and helps Codex plan and verify scoped UI improvements.
 
-- **A · Scan report:** real atomic styles, module/subfunction/UI-element locations and factual problem clues. `library` emits `style-library.html`; `recon` supplies element-level detail.
-- **B · Atomic Token specification:** editable roles, typed underlying style bindings, themes/states and confirmed framework versions. The standalone editor currently emits `framework.html`; `token-spec.html` is the proposed presentation entry.
-- **C · Governance audit:** module-grouped decisions, collapsed equivalent occurrences, separately authorized batches and execution/verification history. `governance-audit.html` is the proposed entry, not a shipped command.
-- **D · Governance report:** final agreed-scope improvements, actual code changes, residuals and delivery index. `governance-report.html` is the proposed entry; existing `visual-regression.html` is supporting before/after/difference evidence, not the entire report.
+Start with a single page or module. Expand into a shared governance workflow when you need it.
 
-The fixed offline presentation package now ships under `assets/artifacts/`. A is generated as `scan.html`, B as `token-spec.html`, and `scripts/artifacts.mjs` renders C/D from explicit evidence records. See [fixed-html.md](references/fixed-html.md) for real commands and schema boundaries; these supersede the earlier proposed-entry labels above. Shared style hashes are checked at generation time. Missing stages display not-produced. Legacy `design-review.html` is supporting diagnosis only. Codex performs scanning, diagnosis, authorized code changes and verification; HTML does not launch Codex or create PRs.
+## What you can do
 
-`library` and `review` are read-only. Source changes require the separate `implement --write` authority, and GitHub delivery requires the separate `submit --create` authority. Recommendations never appear inside the atomic library.
+- Inspect Token definitions, CSS aliases, direct style values, and UI assets with source locations.
+- Explore a standalone offline scan report, with category filters and source attribution.
+- Define and edit semantic Tokens across 12 atomic categories, with typed properties and previews.
+- Export a Token specification and design manual for durable handoff.
+- Ask Codex to review contextual mappings, apply authorized changes, and record verification gaps.
+- Compare historical findings against a baseline to identify new high-confidence debt.
 
-## Element-level reconnaissance
+Equal values do not necessarily have equal meanings. A missing static reference does not prove an asset is safe to delete. Source analysis does not prove visual or runtime correctness.
 
-Before framework design, map **module → functional area → subfunction → UI element**. The read-only `recon` command produces `module-recon.html` and `element-recon.json`: detail supporting Product A, not another top-level product. It separates all elements from concrete issues and preserves source-backed opening steps, caller-dependent branches, shared-root deduplication and unverified runtime checks.
+## For individuals and teams
 
-```bash
-node scripts/govern.mjs recon /path/to/frontend --scope /path/to/element-scope.json --out /tmp/govern-ui-pilot
-```
+| | Individual designers and developers | Product teams |
+|---|---|---|
+| Start with | One page, feature, or module | An agreed product scope and module map |
+| Review | Existing styles and proposed Tokens | Shared owners, contextual mappings, and batch decisions |
+| Keep | Scan report, Token specification, design manual | Versioned decisions, execution receipts, and verification records |
 
-The scope is authored by Codex from inspected code, not automatically discovered. An existing TypeScript parser is required (optionally `--typescript /path/to/typescript.js`); the command does not install dependencies or execute project code. See [the contract and limitations](references/element-reconnaissance.md). Pilot one functional chain before scaling.
-
-The complete workflow is module discovery → global reconnaissance → confirmed framework/source bindings → authorized small batches → visual verification → durable delivery. The existing `review` contract schema 2 and `implement` schema 1 remain incompatible; do not pass an unconverted review export straight to implementation or change only its schema number.
-
-## Complete atomic framework
-
-The definition step always includes Color, Typography, Icons, Shadow, Stroke, Radius, Spacing/sizing, Opacity, Blur/filter, Layers, Motion and Responsive layout. Each category has editable role definitions and typed binding fields even when a scan reports no usage. Users delete unwanted proposed Tokens directly, with undo; category entries and the remaining definitions stay in the editor, exports and manual. There is no per-role adoption checkbox.
-
-```bash
-node scripts/framework.mjs --input /path/to/framework-input.json --out /path/to/framework
-```
-
-This produces a standalone `framework.html` with per-category decisions, immutable confirmed versions, full-framework JSON and design-manual exports. It also preserves earlier color-only browser drafts when a legacy storage key is supplied. See [the input and adoption contract](references/atomic-framework.md). The existing `review` output and implementation executor remain separate; framework confirmation does not change application source.
-
-## Atomic library
-
-- A single `style-library.html` that works offline.
-- White canvas, black information hierarchy, responsive layout.
-- Chinese and English switching.
-- Search across Token names, values, and source files.
-- One-click Token copying and JSON mapping export.
-- Recursive CSS Variable alias resolution, including the written value and resolved value.
-- Separate color groups for backgrounds, text, borders, icon fills, brand/action, feedback, and data visualization.
-- Visual specimens for typography, shadows, strokes, radii, spacing, opacity, blur, layers, and motion.
-- Real previews for repository-owned and readable inline SVGs.
-- Imported icon names and package sources when package geometry is not present in the repository.
-- Direct CSS values shown as neutral inventory—not as errors.
-- Token and hardcoded-value attribution to product functions, components, pages, and states, with honest evidence labels.
-
-## Legacy review generator and diagnostic data
-
-- A separate bilingual, offline `design-review.html`, including a complete UI Icon and graphic-asset catalog with app-source, dynamic-loading, public-contract, deletion-qualification, and runtime-verification status.
-- The committed legacy page remains available for compatibility; it does not implement the new separate B/C interaction contract. Use versioned framework and audit records rather than treating that page as execution authority.
-- Consumer-context diagnosis follows definitions through aliases and adapters into real properties, selectors, JSX elements, components, pages, states, modes, and product scopes.
-- Local consumer evidence outranks Token names and equal color values; same-value page, surface, action, and scrim roles remain separate.
-- Tailwind namespace collisions are kept separate, adapters never become target owners, and a shared primitive with incompatible consumers stays unresolved.
-- Background diagnosis distinguishes page, surface, elevated content, translucent scrim, interactive states, and scoped rendering effects.
-- Each target row exposes its source evidence and uses `source-confirmed`, `source-suggested`, or `manual-review` rather than presenting heuristic guesses as ready.
-- A machine-readable `primitive -> semantic -> component` target contract with light/dark mode mappings.
-- Old-Token lifecycle decisions limited to migrate, merge, or delete; aliases are treated only as rollout mechanisms.
-- Routine migration, merge, and deletion work stays in an execution ledger; only genuine ambiguity enters the designer decision center.
-- Implementation slices tied to affected product functions, pages, and visual-regression states.
-- Exportable `govern-ui-decisions.json` draft; the HTML never authorizes source changes.
-- Exportable `govern-ui-token-contract.json` for approved implementation.
-- Exported, approved direct-color mappings carry exact source evidence into implementation; unsupported Tailwind, script, generated, or stale evidence remains visibly partial or blocked.
-
-## Approved implementation and delivery
-
-- `implement` previews approved Token and direct-style changes without touching source.
-- `implement --write` applies only source-safe mappings, writes before/after snapshots, and records every complete, partial, or blocked item in an implementation ledger.
-- `submit` validates the ledger and prepares a repository-scoped Draft PR body without changing Git.
-- `submit --create` explicitly creates a branch, stages only ledger-owned files, commits, pushes, and opens a Draft PR after remote and GitHub authentication checks.
-- Missing component systems are proposed in Review, but component source is blocked until owner path, anatomy, variants, states, and accessibility contracts are approved.
-
-## Visual regression
-
-- A separate bilingual, offline `visual-regression.html`.
-- Before, after, and difference views tied to real feature/page/state/viewport/theme coordinates.
-- Source comparison for Tokens and direct style values.
-- Coverage matrix and explicit unverified states.
-- Exportable `govern-ui-visual-decisions.json`.
+The same core workflow supports both. Team records are maintained through Codex and exported files; GovernUI does not provide a hosted collaboration service.
 
 ## Install
 
-Requirements: Git, Codex, and Node.js 20 or newer.
+Core scanning requires Git, Codex, and Node.js 20 or newer.
+
+For a new installation:
 
 ```bash
 git clone https://github.com/BerlinKing/govern-ui.git "${CODEX_HOME:-$HOME/.codex}/skills/govern-ui"
 ```
 
-Restart Codex if the Skill does not appear immediately, then invoke it as `$govern-ui`.
+If that directory already exists, compare and preserve your local changes before updating it. Invoke the Skill as `$govern-ui` once it is available in your Codex session.
 
-## Quick start
+Element-level TSX reconnaissance additionally requires an installed TypeScript parser. Browser verification requires a browser and suitable automation tooling. Resolving package icon geometry may require the target project's installed dependencies. These are optional for the first scan.
 
-Ask Codex:
+## Quick start in Codex
+
+For an individual project:
 
 ```text
-Use $govern-ui to extract this frontend's atomic style library and CSS Token map.
-Use $govern-ui to review this frontend's design system and show me the decisions visually.
+Use $govern-ui to inspect this frontend's styles. Start with the settings page,
+show the scan report, and identify which source observations need review.
 ```
 
-Or run it directly:
+For a team:
+
+```text
+Use $govern-ui to map this frontend's modules and inspect shared style owners.
+Prepare a Token specification and propose a small migration batch with affected
+pages and states. Explain what has been verified and what remains unresolved.
+```
+
+For Token definition:
+
+```text
+Use $govern-ui to prepare an editable semantic Token specification from the
+inspected source. Keep observed values separate from proposed defaults.
+```
+
+Specify the scope you want. Generating reports and confirming a specification do not authorize application changes or GitHub publication.
+
+## Try the scanner directly
+
+Run these commands from the installed GovernUI directory:
 
 ```bash
-node scripts/govern.mjs library /path/to/frontend --out /tmp/govern-ui
-node scripts/govern.mjs review /path/to/frontend --out /tmp/govern-ui
-node scripts/govern.mjs implement /path/to/frontend --decisions /tmp/govern-ui/govern-ui-decisions.json --contract /tmp/govern-ui/govern-ui-token-contract.json --out /tmp/govern-ui/implementation
-# After reviewing the dry-run plan and explicitly authorizing source changes:
-node scripts/govern.mjs implement /path/to/frontend --decisions /tmp/govern-ui/govern-ui-decisions.json --contract /tmp/govern-ui/govern-ui-token-contract.json --out /tmp/govern-ui/implementation --write
-node scripts/govern.mjs submit /path/to/frontend --ledger /tmp/govern-ui/implementation/govern-ui-implementation-ledger.json --out /tmp/govern-ui/submission
-# After tests and Product C, and only with explicit Git/GitHub authorization:
-node scripts/govern.mjs submit /path/to/frontend --ledger /tmp/govern-ui/implementation/govern-ui-implementation-ledger.json --out /tmp/govern-ui/submission --create
-node scripts/govern.mjs snapshot /path/to/frontend --out /tmp/govern-ui/before.json
-# Capture the same page-state manifest before and after approved cleanup.
-node scripts/govern.mjs snapshot /path/to/frontend --out /tmp/govern-ui/after.json
-node scripts/govern.mjs regression --before /tmp/govern-ui/before.json --after /tmp/govern-ui/after.json --manifest /tmp/govern-ui/visual-manifest.json --out /tmp/govern-ui
+node scripts/govern.mjs library /path/to/frontend --out /tmp/govern-ui-scan
 ```
 
-Open either:
+Open `/tmp/govern-ui-scan/scan.html`. The output also contains `scan-data.json` and `style-library-detail.html` for detailed evidence and aliases. Store reports outside the scanned repository.
 
-```text
-/tmp/govern-ui/style-library.html
-/tmp/govern-ui/design-review.html
-/tmp/govern-ui/visual-regression.html
+Try the bundled fixture without a separate application:
+
+```bash
+node scripts/govern.mjs library scripts/tests/fixtures/migrate --out /tmp/govern-ui-demo
 ```
 
-`report` remains a compatibility alias for `library`; use `review` for recommendations.
+Fixture results demonstrate the tool; they are not acceptance evidence for your application.
+
+## Workflow and outputs
+
+| Stage | Purpose | Entry | How it is produced |
+|---|---|---|---|
+| Scan | Source inventory and factual clues | `scan.html` | `govern.mjs library`; optional `recon` detail |
+| Specify | Editable semantic Tokens and typed bindings | `token-spec.html` | `framework.mjs` with explicit input |
+| Review | Contextual mappings and governance decisions | `governance-audit.html` | `artifacts.mjs` with evidence supplied by Codex |
+| Report | Actual scoped outcomes and remaining verification gaps | `governance-report.html` | `artifacts.mjs` with outcome records supplied by Codex |
+
+The four stages can be used progressively. A single scan does not require a complete migration. Missing stages display as not produced.
+
+The Token editor covers Color, Typography, Icons, Shadows, Stroke, Radius, Spacing/sizing, Opacity, Blur/filter, Layers, Motion, and Responsive layout. Proposed defaults are not observations or confirmed adoption. Icons use actual assets; missing previews or usage sizes remain unresolved.
+
+HTML works offline. Browser storage is a draft cache: export JSON before handing decisions to another person or environment. Editing the HTML does not update generated CSS or application source.
+
+See [Token editor inputs](references/atomic-framework.md), [element-level reconnaissance](references/element-reconnaissance.md), and [artifact inputs and rendering](references/fixed-html.md).
+
+## Team baseline checks
+
+After reviewing the initial findings and excluded scope:
+
+```bash
+node scripts/govern.mjs baseline accept /path/to/frontend --out /tmp/govern-ui-baseline.json
+node scripts/govern.mjs check /path/to/frontend --baseline /tmp/govern-ui-baseline.json
+```
+
+Keep the reviewed baseline with your team's records. The check compares findings and gates newly added high-confidence, high-severity findings; it does not prove design quality or replace runtime verification.
+
+## Current boundaries
+
+- Module maps, review decisions, batch authorization, and execution receipts require Codex and source inspection; they are not automatically discovered or enforced end to end.
+- The main scanner uses static heuristics. Finding a framework does not mean every syntax or runtime style in that framework is supported.
+- Scan exclusions and unresolved observations must be reviewed before consolidation or deletion.
+- Review and outcome pages render explicit records; the renderer cannot independently prove that source changes were applied or visually verified.
+- Visual regression consumes supplied screenshots and a state manifest. It does not capture the application's states automatically.
+- `review` is a legacy diagnostic generator. Its Token contract uses schema 2; `implement` currently expects schema 1. Their exports cannot be connected directly. Framework and audit exports are separate formats too.
+- `implement` and `submit` are experimental advanced helpers. The executor requires an explicitly qualified schema-1 contract bound to the inspected source baseline, matching decision identities, and exact declaration evidence. Source drift blocks execution; this does not make review-v2 or framework/audit exports compatible. See [the execution contract](references/implementation-schema.md).
+- The scanner and HTML do not upload your project by themselves. Your Codex environment and any tools you explicitly invoke have their own data handling behavior.
 
 ## Development
 
+Core fixture suite:
+
 ```bash
-node --test scripts/tests/run-tests.mjs scripts/tests/implementation.test.mjs
+node scripts/tests/run-tests.mjs
 ```
 
-The fixture suite verifies read-only extraction, Token aliases, category coverage, SVG embedding, the target UIKit skeleton, lifecycle separation, direct-style decision export, safe implementation, Draft PR preparation, offline HTML generation, and script parsing.
+Install the locked development dependencies, then run syntax checks and all non-browser suites:
+
+```bash
+npm ci
+npm run check
+npm test
+```
+
+The test runner supplies the installed TypeScript parser to fixture repositories. A real-project icon acceptance test remains explicitly skipped unless `GOVERN_UI_TEST_REPO` identifies the intended repository.
+
+Browser editor checks use the development Playwright dependency and Chromium:
+
+```bash
+npx playwright install chromium
+npm run test:browser
+```
+
+Alternatively, set `GOVERNUI_CHROME` to an existing Chrome executable. `GOVERNUI_PLAYWRIGHT` can identify an existing Playwright installation when development dependencies are unavailable.
+
+The tests cover fixtures and editor behavior. Application-level visual acceptance remains a separate check. CI runs all non-browser suites on Node.js 20 and 22, plus the Token editor browser suite on Node.js 22. This does not replace real-project acceptance.
 
 ## License
 

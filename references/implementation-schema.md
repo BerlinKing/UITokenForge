@@ -1,4 +1,4 @@
-# GovernUI implementation and delivery contract
+# Experimental implementation and delivery contract
 
 Use this contract after the applicable Product B framework version is confirmed and Product C proposals are reviewed. Exported JSON remains a decision record, not write authorization; `--write` and `--create` request mutations but do not provide user authorization. Verify explicit approval of the current batch and separate Git/remote authority before invoking them.
 
@@ -14,11 +14,21 @@ The agent-maintained module map, framework and project-level `govern-ui-contract
 
 - `govern-ui-decisions.json` with schema version 4;
 - `govern-ui-token-contract.json` with schema version 1;
-- matching lifecycle IDs and approved Foundation batches;
+- matching `repoId` and `reportId` in the contract and decisions, lifecycle IDs and approved Foundation batches;
+- `sourceBaseline` captured from the inspected source using `captureImplementationBaseline(repoRoot)`;
+- each current Token's exact `file`, `line`, `name` and raw `value`;
 - approved direct-style mappings exported from the same Foundation batch;
 - a Git repository and a clean tracked worktree for `--write`.
 
 Also inspect untracked and staged work, preserve unrelated changes, and recheck source fingerprints. Confirm before-screenshots and the route/state matrix, including consumers in other modules when shared owners change. Any source, target-binding or scope drift invalidates affected approval and requires a new preview.
+
+## Binding an experimental contract
+
+For a manually qualified schema-1 contract, import `captureImplementationBaseline` from `scripts/lib/implementation.mjs` and store its result as `contract.sourceBaseline`. It records the canonical repository root and SHA-256 hashes of every file in the executor's scan scope. Capture it only when the declarations, consumers and decisions have been inspected together; never refresh a stale contract automatically or use it to relabel a review-v2 export.
+
+A changed, added or removed scanned file or a different repository invalidates the contract before planning. The write path rechecks this baseline immediately before application. Exact declaration evidence must still match: repeated names in one file, a changed value, or a moved source line stay blocked instead of choosing the nearest declaration. Unsupported syntax remains blocked. Store all implementation outputs outside the source repository.
+
+Direct-style mappings require the complete exact source line in `examples[].evidence`, plus the exact line, property and literal value. The executor does not search neighboring lines or replace matching literals in another property. These strict gates intentionally reject ambiguous inputs rather than guessing.
 
 Run the preview first:
 
@@ -85,7 +95,7 @@ submit <repo> --ledger <implementation-ledger.json> --out <directory> --create
 
 The create path must:
 
-1. refuse pre-existing staged or unrelated changes;
+1. refuse pre-existing staged or unrelated changes and reject ledger files whose content no longer matches the recorded `afterHash`;
 2. create a `codex/govern-ui-*` branch when currently on the base branch;
 3. stage only ledger-owned files;
 4. commit and push the batch;
