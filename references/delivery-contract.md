@@ -18,7 +18,7 @@ Use an `artifact-manifest.json` or equivalent project index with each record's I
 | --- | --- | --- |
 | Module map | `module-map.json` | Before diagnosis: business modules, shared foundations, exclusions, consumers and repository coverage |
 | Current inventory and baselines | Scan JSON and source snapshots | Reconnaissance and each batch: source revision, scan boundaries, raw evidence and stable IDs |
-| Target framework | `govern-ui-framework.json` | Before migration: all baseline category entries and current role definitions, including unused/deferred categories; explicit Token deletions and undo/history; observations separate from adoption reasons; meanings, scopes/modes, typed bindings, revisions and confirmation basis |
+| Target framework | `govern-ui-framework.json` | Before migration: all baseline category entries and current role definitions, including unused/deferred categories; explicit Token deletions and undo/history; observations separate from proposed values and project-scope decisions; meanings, scopes/modes, typed bindings, revisions and confirmation basis |
 | Core manual | `DESIGN-SYSTEM.md` | Draft with the framework; approved rules at lock; real values, examples and exceptions added as implementation is verified |
 | Runtime style library | Existing CSS/TS/theme owners | Primitives, semantic Tokens, theme and scoped mappings; one qualified owner per scope, not independent parallel values |
 | Runtime adapters | Existing Tailwind/JS/TS/framework config | Adapters reference the qualified owners; build output and actual consumers prove reachability |
@@ -29,7 +29,7 @@ Use an `artifact-manifest.json` or equivalent project index with each record's I
 | Residuals/exceptions | Ledger view or dedicated export | Owner, reason, affected modules/states, verification gaps and review trigger; excluded and intentionally retained differ |
 | Final conclusion | `governance-summary.md` | At closure: comparable before/after counts, scoped outcome, module completion, residuals and genuine verification coverage |
 | Product A | `style-library.html` | Factual source-backed specimens, bindings and product locations; preserve before/after snapshots |
-| Product B: design atomic Token specification | `token-spec.html` plus framework records | Editable roles and typed source bindings; category confirmation and immutable version history; no occurrence-level migration decisions |
+| Product B: design atomic Token specification | `token-spec.html` plus framework records | Editable roles and typed source bindings; whole-framework confirmation and immutable version history; no occurrence-level migration decisions |
 | Product C: governance audit | `governance-audit.html` plus decisions/ledgers | Module-grouped attention queue, collapsed equivalent occurrences, editable proposals and separate authorization/application/verification history |
 | Product D: governance report | `governance-report.html` plus final conclusion | Final agreed-scope Token/code improvements, module outcomes, residuals, verification and delivery index; not one batch's receipt |
 | D visual evidence | `visual-regression.html`, screenshots, manifest, decisions | Same real route/state/theme/viewport before and after; accepted, intentional-change, repair and unverified remain explicit |

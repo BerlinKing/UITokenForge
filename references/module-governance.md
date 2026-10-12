@@ -50,7 +50,7 @@ Classify equal values and unreferenced assets as candidates until contextual/del
 
 After reconnaissance, follow the foundation guide to propose the global framework and underlying style bindings. Reuse qualified owners rather than building parallel CSS/JS/Tailwind systems. The user's editable choices cover taxonomy, names, meanings, intended locations, scope, required modes/states, primitive/library owners and their bindings.
 
-Framework confirmation and code authorization are distinct. Lock the confirmed categories and source bindings in a versioned record, with unresolved/disabled categories explicit. A module batch can use a confirmed category without waiting for unrelated categories. A new semantic or a different shared mode value requires a new revision and a consumer-impact diff. Existing product-specific values can remain explicit scoped mappings; global semantics do not require identical brand values.
+Framework confirmation and code authorization are distinct. Confirm the entire current framework once and pin its category versions and source bindings in a versioned record. Keep project-scope exclusions explicit; a module batch may use only part of the confirmed framework. Resolve required fields or remove incomplete proposals before confirmation. A new semantic or a different shared mode value requires a new revision and a consumer-impact diff. Existing product-specific values can remain explicit scoped mappings; global semantics do not require identical brand values.
 
 ## 4. Plan and execute bounded rounds
 

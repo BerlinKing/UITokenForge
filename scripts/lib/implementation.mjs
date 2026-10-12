@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { createGovernanceSnapshot } from "./governance-snapshot.mjs";
@@ -17,7 +17,7 @@ function lineAt(content, index) {
 }
 
 function declarationMatches(content, tokenName) {
-  const pattern = new RegExp(`(^[\\t ]*)${escapeRegExp(tokenName)}[\\t ]*:[\\t ]*[^;]+;`, "gm");
+  const pattern = new RegExp(`(^[\\t ]*)${escapeRegExp(tokenName)}[\\t ]*:[\\t ]*[^;{}]+;`, "gm");
   return [...content.matchAll(pattern)].map((match) => ({
     index: match.index,
     line: lineAt(content, match.index),
@@ -25,10 +25,11 @@ function declarationMatches(content, tokenName) {
   }));
 }
 
-function closestDeclaration(content, token) {
+function exactDeclaration(content, token, checkLine = false) {
   const matches = declarationMatches(content, token.name);
-  if (!matches.length) return null;
-  return matches.sort((left, right) => Math.abs(left.line - token.line) - Math.abs(right.line - token.line))[0];
+  if (matches.length !== 1 || (checkLine && matches[0].line !== token.line)) return null;
+  const value = matches[0].text.slice(matches[0].text.indexOf(":") + 1, -1).trim();
+  return value === token.value?.trim() ? matches[0] : null;
 }
 
 function replaceAt(content, index, length, replacement) {
@@ -36,14 +37,14 @@ function replaceAt(content, index, length, replacement) {
 }
 
 function renameDeclaration(content, token, targetName) {
-  const match = closestDeclaration(content, token);
+  const match = exactDeclaration(content, token);
   if (!match) return { content, changed: false, reason: "source declaration not found" };
   const renamed = match.text.replace(token.name, targetName);
   return { content: replaceAt(content, match.index, match.text.length, renamed), changed: true };
 }
 
 function removeDeclaration(content, token) {
-  const match = closestDeclaration(content, token);
+  const match = exactDeclaration(content, token);
   if (!match) return { content, changed: false, reason: "source declaration not found" };
   let start = match.index;
   let end = match.index + match.text.length;
@@ -87,9 +88,25 @@ export function validateImplementationInputs(decisions, contract) {
   if (!Array.isArray(decisions?.tokenLifecycleDecisions)) errors.push("tokenLifecycleDecisions must be an array");
   if (decisions?.directStyleDecisions != null && !Array.isArray(decisions.directStyleDecisions)) errors.push("directStyleDecisions must be an array when present");
   if (contract?.schemaVersion !== 1) errors.push("token contract schemaVersion must be 1");
+  for (const key of ["repoId", "reportId"]) {
+    if (typeof contract?.[key] !== "string" || !contract[key] || decisions?.[key] !== contract[key]) errors.push(`matching contract and decisions ${key} is required`);
+  }
+  const baseline = contract?.sourceBaseline;
+  if (baseline?.schema !== "governui.implementation-baseline/1" || typeof baseline.root !== "string" || !path.isAbsolute(baseline.root) || !Array.isArray(baseline.files)) {
+    errors.push("sourceBaseline from captureImplementationBaseline is required; re-inspect and approve the source before binding a contract");
+  } else {
+    const names = new Set();
+    for (const file of baseline.files) {
+      if (typeof file.file !== "string" || !file.file || path.isAbsolute(file.file) || file.file.split(/[\\/]/).includes("..") || names.has(file.file) || !/^[a-f0-9]{64}$/.test(file.hash)) errors.push("invalid or duplicate sourceBaseline file");
+      names.add(file.file);
+    }
+  }
   if (contract?.status !== "draft") errors.push("token contract must remain draft until implementation");
   if (!Array.isArray(contract?.lifecycle)) errors.push("token contract lifecycle must be an array");
   const contractIds = new Set((contract?.lifecycle ?? []).map((item) => item.id));
+  for (const action of contract?.lifecycle ?? []) {
+    if (!Array.isArray(action.currentTokens) || !action.currentTokens.length || action.currentTokens.some(token => typeof token.name !== "string" || !token.name.startsWith("--") || typeof token.file !== "string" || typeof token.value !== "string" || !token.value.trim() || !Number.isInteger(token.line) || token.line < 1)) errors.push(`exact source declarations are required for lifecycle ${action.id}`);
+  }
   for (const item of decisions?.tokenLifecycleDecisions ?? []) {
     if (!contractIds.has(item.lifecycleId)) errors.push(`unknown lifecycle decision ${item.lifecycleId}`);
     if (!new Set(["migrate", "merge", "delete"]).has(item.action)) errors.push(`invalid lifecycle action ${item.action}`);
@@ -122,6 +139,20 @@ async function loadSource(repoRoot) {
   return contents;
 }
 
+// Bind only after inspecting and approving this source. Never refresh an old
+// contract automatically: doing so would conceal drift from the reviewer.
+export async function captureImplementationBaseline(repoRoot) {
+  const root = await realpath(repoRoot);
+  const contents = await loadSource(root);
+  return { schema: "governui.implementation-baseline/1", root,
+    files: [...contents].map(([file, content]) => ({ file, hash: sha(content, 64) })).sort((a, b) => a.file.localeCompare(b.file)) };
+}
+
+async function assertSourceBaseline(repoRoot, baseline) {
+  const current = await captureImplementationBaseline(repoRoot);
+  if (current.root !== baseline.root || JSON.stringify(current.files) !== JSON.stringify(baseline.files)) throw new Error("source baseline drift or repository mismatch; refresh source evidence and obtain approval for a new contract");
+}
+
 function targetExists(contents, tokenName, excludingFile = null) {
   for (const [file, content] of contents) {
     if (file === excludingFile) continue;
@@ -134,6 +165,9 @@ function mutateTokenAction(action, contents, options) {
   const changedFiles = new Set();
   const notes = [];
   let replacements = 0;
+  for (const token of action.currentTokens) {
+    if (!exactDeclaration(contents.get(token.file) ?? "", token)) return { status: "blocked", reason: `${token.file}:${token.line}: source declaration is stale, missing, or ambiguous`, changedFiles: [], replacements: 0 };
+  }
   if (action.action === "delete") {
     const remaining = action.currentTokens.reduce((sum, token) => sum + referenceCount(contents, token.name), 0);
     if (remaining) return { status: "blocked", reason: `${remaining} source references remain`, changedFiles: [], replacements: 0 };
@@ -213,23 +247,14 @@ function styleExtension(file) {
 function replaceDirectStyleExample(content, example, sourceValues, targetName) {
   if (!example?.property) return { content, changed: false, reason: "CSS property evidence is missing" };
   const lines = content.split("\n");
-  const expected = Math.max(0, Number(example.line || 1) - 1);
-  const candidates = [...lines.keys()]
-    .filter((index) => Math.abs(index - expected) <= 12)
-    .sort((left, right) => Math.abs(left - expected) - Math.abs(right - expected));
-  const propertyPattern = new RegExp(`(^|[;{]\\s*)${escapeRegExp(example.property)}\\s*:`, "i");
-  for (const index of candidates) {
-    const line = lines[index];
-    if (!propertyPattern.test(line)) continue;
-    const source = sourceValues.find((value) => line.includes(value));
-    if (!source) {
-      if (line.includes(`var(${targetName})`)) return { content, changed: false, alreadyApplied: true };
-      continue;
-    }
-    lines[index] = line.replace(source, `var(${targetName})`);
-    return { content: lines.join("\n"), changed: true };
-  }
-  return { content, changed: false, reason: `no exact ${example.property} declaration found near line ${example.line}` };
+  const index = example.line - 1, line = lines[index];
+  if (!Number.isInteger(example.line) || !line || typeof example.evidence !== "string" || line.trim() !== example.evidence.trim()) return { content, changed: false, reason: "exact source line evidence is stale or missing" };
+  const pattern = new RegExp(`(^|[;{])([\\t ]*${escapeRegExp(example.property)}[\\t ]*:[\\t ]*)([^;{}]+)(?=[;}])`, "g");
+  const matches = [...line.matchAll(pattern)].filter(match => sourceValues.some(value => value.trim() === match[3].trim()));
+  if (matches.length !== 1) return { content, changed: false, reason: "source property/value is missing or ambiguous" };
+  const match = matches[0];
+  lines[index] = replaceAt(line, match.index + match[1].length + match[2].length, match[3].length, `var(${targetName})${match[3].match(/\s*$/)[0]}`);
+  return { content: lines.join("\n"), changed: true };
 }
 
 function mutateDirectStyleDecision(decision, contents) {
@@ -271,13 +296,20 @@ function mutateDirectStyleDecision(decision, contents) {
 export async function planImplementation({ repoRoot, decisions, contract, allowRuntimeDelete = false, allowCrossFileMerge = false }) {
   const validation = validateImplementationInputs(decisions, contract);
   if (!validation.valid) throw new Error(validation.errors.join("; "));
+  await assertSourceBaseline(repoRoot, contract.sourceBaseline);
   const original = await loadSource(repoRoot);
+  const loadedFiles = [...original].map(([file, content]) => ({ file, hash: sha(content, 64) })).sort((a, b) => a.file.localeCompare(b.file));
+  if (JSON.stringify(loadedFiles) !== JSON.stringify(contract.sourceBaseline.files)) throw new Error("source baseline drift while loading source");
   const contents = new Map(original);
   const approved = approvedLifecycleIds(decisions);
   const decisionById = new Map(decisions.tokenLifecycleDecisions.map((item) => [item.lifecycleId, item]));
   const actions = [];
   for (const contractAction of contract.lifecycle) {
     if (!approved.has(contractAction.id)) continue;
+    if (contractAction.currentTokens.some(token => !exactDeclaration(original.get(token.file) ?? "", token, true))) {
+      actions.push({ lifecycleId: contractAction.id, action: contractAction.action, status: "blocked", reason: "source declaration is stale, missing, or ambiguous", changedFiles: [], replacements: 0 });
+      continue;
+    }
     const decision = decisionById.get(contractAction.id);
     if (!decision || decision.action !== contractAction.action) {
       actions.push({ lifecycleId: contractAction.id, action: contractAction.action, status: "blocked", reason: "approved action differs from the Token contract", changedFiles: [], replacements: 0 });
@@ -308,6 +340,7 @@ export async function planImplementation({ repoRoot, decisions, contract, allowR
     schemaVersion: 1,
     generatedAt: generatedAt(),
     repoRoot: path.resolve(repoRoot),
+    sourceBaseline: contract.sourceBaseline,
     mode: "dry-run",
     approvedActions: approved.size + approvedDirectStyleDecisions(decisions).length,
     actions,
@@ -324,7 +357,7 @@ export async function planImplementation({ repoRoot, decisions, contract, allowR
 }
 
 export async function implementGovernance({ repoRoot, decisionsFile, contractFile, outputDir, write = false, allowDirty = false, allowRuntimeDelete = false, allowCrossFileMerge = false }) {
-  const absoluteRoot = path.resolve(repoRoot);
+  const absoluteRoot = await realpath(repoRoot);
   const [decisions, contract, git, beforeLibrary] = await Promise.all([
     readJson(path.resolve(decisionsFile)),
     readJson(path.resolve(contractFile)),
@@ -335,12 +368,16 @@ export async function implementGovernance({ repoRoot, decisionsFile, contractFil
   if (write && git.dirty.length && !allowDirty) throw new Error(`working tree is not clean: ${git.dirty.slice(0, 8).join(", ")}`);
   const plan = await planImplementation({ repoRoot: absoluteRoot, decisions, contract, allowRuntimeDelete, allowCrossFileMerge });
   const output = path.resolve(outputDir);
+  if (output === absoluteRoot || output.startsWith(absoluteRoot + path.sep)) throw new Error("implementation output must be outside the source repository");
   await mkdir(output, { recursive: true });
+  const outputReal = await realpath(output);
+  if (outputReal === absoluteRoot || outputReal.startsWith(absoluteRoot + path.sep)) throw new Error("implementation output must be outside the source repository");
   const beforeSnapshot = createGovernanceSnapshot(beforeLibrary);
   await writeFile(path.join(output, "govern-ui-before-snapshot.json"), `${JSON.stringify(beforeSnapshot, null, 2)}\n`, "utf8");
   const serializablePlan = { ...plan, _contents: undefined };
   await writeFile(path.join(output, "govern-ui-implementation-plan.json"), `${JSON.stringify(serializablePlan, null, 2)}\n`, "utf8");
   if (!write) return { plan: path.join(output, "govern-ui-implementation-plan.json"), beforeSnapshot: path.join(output, "govern-ui-before-snapshot.json"), summary: plan.summary, mode: "dry-run" };
+  await assertSourceBaseline(absoluteRoot, contract.sourceBaseline);
   for (const item of plan._contents) await writeFile(path.join(absoluteRoot, item.file), item.content, "utf8");
   const afterLibrary = await extractStyleLibrary(absoluteRoot);
   const afterSnapshot = createGovernanceSnapshot(afterLibrary);
