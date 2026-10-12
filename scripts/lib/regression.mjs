@@ -77,7 +77,7 @@ export async function writeVisualRegression(regression, outputDirectory) {
   const template = await readFile(templatePath, "utf8");
   const presentation = { ...regression, sourceDiff: { summary: regression.sourceDiff.summary } };
   const html = template
-    .replaceAll("{{REGRESSION_TITLE}}", escapeHtml(`GovernUI Visual Regression — ${regression.project?.name ?? "Project"}`))
+    .replaceAll("{{REGRESSION_TITLE}}", escapeHtml(`UITokenForge Visual Regression — ${regression.project?.name ?? "Project"}`))
     .replace("{{REGRESSION_JSON}}", safeScriptJson(presentation));
   const files = {
     html: path.join(output, "visual-regression.html"),

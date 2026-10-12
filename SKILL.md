@@ -1,9 +1,9 @@
 ---
-name: govern-ui
+name: ui-token-forge
 description: Map frontend product modules, inventory real atomic styles, define a shared semantic Token framework, and govern approved module batches with contextual mappings and visual verification. Use for style-library inventory, design-system standardization, Token migration, or visual regression.
 ---
 
-# GovernUI
+# UITokenForge
 
 ## Current B interaction contract
 
@@ -11,7 +11,7 @@ For Product B, Icons means a concrete directory: real icon preview, asset name a
 
 For Product B, use two primary actions: **添加新的语义 Token** and **确认规范**. Add/Edit share one compact dialog with Token name, meaning and the complete category-specific properties (including light/dark color values). No category-adoption/reason form, generic source catalog, custom-style chooser or owner-path field. Preserve ownership and evidence internally. Confirm the whole framework once; edits to confirmed data automatically create a draft revision, preserve prior history and require mapping-impact review. Confirmation never authorizes source changes. See [atomic-framework.md](references/atomic-framework.md).
 
-GovernUI governs a project through **module discovery -> global reconnaissance -> shared framework and source bindings -> approved module batches -> cross-module closure -> durable delivery**. Modules define where work happens; atomic categories define the standards used everywhere. Start with atoms, not component or molecule construction.
+UITokenForge governs a project through **module discovery -> global reconnaissance -> shared framework and source bindings -> approved module batches -> cross-module closure -> durable delivery**. Modules define where work happens; atomic categories define the standards used everywhere. Start with atoms, not component or molecule construction.
 
 Products A/B/C/D are distinct views of the same versioned project evidence and decisions, not independent sources of truth. A clean system is not merely fewer Tokens: each shared style has a qualified owner, a semantic purpose and real consumers; modes and states are explicit; exceptions are bounded; old definitions have a final disposition; and affected page states have been verified. Do not force content, behavior, geometry, or every one-off visual value into a global Token.
 

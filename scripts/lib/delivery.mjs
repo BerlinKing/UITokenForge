@@ -27,7 +27,7 @@ function pullRequestBody(ledger, context) {
   const blocked = ledger.actions.filter((item) => item.status === "blocked");
   const counts = Object.fromEntries(["migrate", "merge", "delete"].map((action) => [action, ready.filter((item) => item.action === action).length]));
   const files = ledger.changedFiles.map((item) => item.file);
-  return `## GovernUI design-system governance
+  return `## UITokenForge design-system governance
 
 This Draft PR contains one approved repository-level governance batch. It does not claim visual safety until the linked Product C matrix is complete.
 
@@ -82,7 +82,7 @@ export async function prepareSubmission({ repoRoot, ledgerFile, outputDir, title
     const file = await realpath(path.join(root, item.file));
     if (!file.startsWith(await realpath(root) + path.sep) || sha(await readFile(file, "utf8")) !== item.afterHash) throw new Error(`ledger source drift: ${item.file}; regenerate and review the execution receipt`);
   }
-  if (staged) throw new Error("pre-existing staged changes must be cleared before GovernUI submission");
+  if (staged) throw new Error("pre-existing staged changes must be cleared before UITokenForge submission");
   const allowed = new Set(ledger.changedFiles.map((item) => item.file));
   const dirty = status.split("\n").filter(Boolean).map(statusPath);
   const unrelated = dirty.filter((file) => !allowed.has(file));
@@ -90,7 +90,7 @@ export async function prepareSubmission({ repoRoot, ledgerFile, outputDir, title
   const missing = [...allowed].filter((file) => !dirty.includes(file));
   if (missing.length) throw new Error(`ledger files are not present in the working tree: ${missing.slice(0, 8).join(", ")}`);
   const suggestedBranch = safeBranch(branch || `codex/govern-ui-${path.basename(root)}-${new Date().toISOString().slice(0, 10)}`);
-  const prTitle = title || `GovernUI: govern ${path.basename(root)} design system`;
+  const prTitle = title || `UITokenForge: govern ${path.basename(root)} design system`;
   const output = path.resolve(outputDir);
   await mkdir(output, { recursive: true });
   const bodyFile = path.join(output, "govern-ui-pr.md");

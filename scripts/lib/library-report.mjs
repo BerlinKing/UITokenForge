@@ -18,7 +18,7 @@ function safeScriptJson(value) {
 
 export function librarySummary(library) {
   return [
-    `GovernUI Atomic Style Library — ${library.project.name}`,
+    `UITokenForge Atomic Style Library — ${library.project.name}`,
     `Tokens: ${library.summary.tokens} (${library.summary.cssVariables} CSS variables)`,
     `Aliases resolved: ${library.summary.resolvedAliases}`,
     `Icons: ${library.summary.icons}`,
@@ -33,7 +33,7 @@ export async function writeStyleLibrary(library, outputDirectory) {
   const templatePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../assets/style-library-template.html");
   const template = await readFile(templatePath, "utf8");
   const html = template
-    .replaceAll("{{LIBRARY_TITLE}}", escapeHtml(`GovernUI Atomic Style Library — ${library.project.name}`))
+    .replaceAll("{{LIBRARY_TITLE}}", escapeHtml(`UITokenForge Atomic Style Library — ${library.project.name}`))
     .replace("{{LIBRARY_JSON}}", safeScriptJson(library));
   const file = path.join(output, "scan.html");
   const rendered = await renderArtifact('A', library);
