@@ -35,7 +35,7 @@ export async function runBrowserTests(){
   const row=(await read()).categories.find(x=>x.id===c.id).rows[0];assert.equal(row.meaning[0],`Purpose for ${c.id}`);assert.ok(row.binding);
  }
  await choose('icons');assert.equal(await page.locator('tbody tr').count(),1);assert.equal(await page.locator('tbody img').count(),1);
- await page.screenshot({path:'/private/tmp/governui-icon-directory.png'});
+ await page.screenshot({path:path.join(dir,'governui-icon-directory.png')});
  await page.locator('[data-action="binding"]').click();await page.locator('#icon-name').fill('MinusSmall');await page.locator('#icon-sizes').fill('16px, 24px');await page.locator('button[type="submit"]').click();
  assert.equal((await read()).categories.find(c=>c.id==='icons').rows[0].name,'MinusSmall');
  await page.reload();await choose('icons');assert.ok((await page.locator('tbody').innerText()).includes('24px'));
@@ -72,7 +72,7 @@ export async function runBrowserTests(){
  for(const width of [1440,1024,768,390]){await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`overflow ${width}`)}
  await choose('color');await page.locator('[data-action="add"]').click();
  for(const width of [1440,1024,768,390]){await page.setViewportSize({width,height:900});assert.equal(await page.locator('dialog').evaluate(el=>el.scrollWidth>el.clientWidth),false,`dialog overflow ${width}`)}
- await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:'/private/tmp/governui-simple-token-editor.png'});
+ await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:path.join(dir,'governui-simple-token-editor.png')});
  await page.locator('[data-action="cancel"]').click();assert.deepEqual(errors,[]);console.log('PASS: 12 unified editors, seeded values, validation, cancel/add/delete/undo, persistence, confirmation/revisions, JSON/MD, language, 4 viewports; zero page errors');
  }finally{await browser?.close();await new Promise(r=>server.close(r));await rm(dir,{recursive:true,force:true})}
 }
